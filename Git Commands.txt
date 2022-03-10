@@ -1,0 +1,21 @@
+Use this simple app in this workshop by AWS to test App Runner with Nodejs code from Github. The code to use is provided in the workshop and I also now have it here in Github https://github.com/yescertified/simple-express-app:
+
+The AWS Workshop - https://www.apprunnerworkshop.com/getting-started/github/repo/
+
+The video for the App Runner workshop by AWS can be found here - https://youtu.be/sEX7uFcbc-U?t=1445
+
+
+Git Commands for uploading to Github:
+cd <to source code folder>
+git init
+git status
+git add . (to put these files in what is called the staging area)
+git commit -M "Custom message" (to commit all these file into the GitHub folder i.e. the hidden .git folder)
+***in case you get an error that asks you to do the messages below, do it, just add your email and name as required.
+git config --global user.email "you@example.com"
+git config --global user.name "Your Name"
+Yes, skipping (git branch -M main) since I'm keeping master as my master name and not changing to main.
+git remote add origin <remote url, get this from your github repo>
+git push -u origin <branch name e.g master or main>
+*If asked for authentication, make sure you are logged into github on your default browser.
+*All your files should now be in github after that, just refresh your github page in your browser :)

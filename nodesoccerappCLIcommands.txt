@@ -1,0 +1,119 @@
+Sample App used is from this here: https://dev.to/achowba/build-a-simple-app-using-node-js-and-mysql-19me
+The Github repo is here: https://github.com/achowba/node-mysql-crud-app
+
+Let's first add the needed database and tables to our already created RDS-MySqL database... Open MySQL Workbench, create a new connection with the credentials you used when creating your MySQL RDS in the AWS Console.
+Now copy the code below, paste and run it.
+
+********************************************************************
+CREATE DATABASE socka;
+show databases;
+use socka;
+show tables;
+CREATE TABLE IF NOT EXISTS `players` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(255) NOT NULL,
+  `last_name` varchar(255) NOT NULL,
+  `position` varchar(255) NOT NULL,
+  `number` int NOT NULL,
+  `image` varchar(255) NOT NULL,
+  `user_name` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
+select * from players;
+********************************************************************
+
+Now remote into your EC2 instance using Session Manager and run the following commands:
+sudo yum update -y
+sudo amazon-linux-extras list | grep nginx
+sudo amazon-linux-extras enable nginx1
+sudo yum clean metadata
+sudo yum -y install nginx
+nginx -v
+sudo su
+cd /
+ls
+mkdir nodesoccerapp
+ls
+cd nodesoccerapp
+make sure you put the correct database credentials in the source code before copying
+aws s3 cp s3://nodesoccerapp --region us-east-1 . --recursive
+ls
+
+
+sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+. ~/.nvm/nvm.sh
+nvm install node
+node -e "console.log('Running Node.js ' + process.version)"
+
+While still in nodesoccerapp folder, do...
+rm -rf package-lock.json (This will remove "package-lock.json" file)
+
+Now continue with the commands below:
+npm install express express-fileupload cors body-parser mysql ejs req-flash --save
+ls (you'll notice that "package-lock.json" is back)
+
+Make sure you're still in the nodesoccerapp folder, then do the following
+npm install -g pm2 (to install pm2)
+
+Now, there is one quick edit you need to make to the "app.js" file before we run the app using pm2. do
+nano app.js
+
+Go to the line where you have const port = 2000; change the 2000; to 5000;
+
+Now, do this...
+npm install nodemon -g (pm2 requires nodemon to function properly)
+nodemon app.js (this is not necessary)
+Ctrl+C (to exit nodemon if you ran the above command i.e. nodemon app.js)
+
+Now, let's start the app using pm2...
+pm2 start --name app.js npm -- start
+pm2 list (to list your running apps)
+
+Now, let's use the commands below to generate an active startup script for PM2 so that if our server restarts for any reason, PM2 will automatically start our apps again (Read about this here https://pm2.keymetrics.io/docs/usage/quick-start/#setup-startup-script):
+pm2 startup
+pm2 save
+
+to test the app, go to EC2 and grab the "Public IPv4 address" or the "Public IPv4 DNS" of the EC2 instance and put in your web browser. make sure to add :5000 to the end of the DNS address. For example, if the Public IPv4 DNS of your server is "ec2-54-91-66-62.compute-1.amazonaws.com" make sure to add :5000 at the end of it before putting it in your browser to test (like this ec2-54-91-66-62.compute-1.amazonaws.com:5000). Just make sure the Security group of your web server allows "Custom TCP" to port range "3000 - 5000" to Source 0.0.0.0/0
+
+If you don't want to always put :5000 in front of your DNS address, do the following (Make sure to allow HTTP on port 80 to your IP in the security group of the instance). We will use nginx to forward requests to port 80 i.e. so that we don't have to add "5000" to the browser anymore, we can just type the IP or the provided DNS name of the EC2 instance in any browser and it should work:
+
+Run the command below:
+sudo nano /etc/nginx/nginx.conf
+
+In the server section, add this to the file (first make sure to first remove anything in the server section as I showed you in class).
+********************************************
+server {
+   listen         80 default_server;
+   listen         [::]:80 default_server;
+   server_name    localhost;
+   root           /usr/share/nginx/html;
+   location / {
+       proxy_pass http://localhost:5000;
+   }
+}
+********************************************
+
+Now do:
+sudo service nginx restart (Restart nginx)
+sudo chkconfig nginx on (atomatically restart nginx if server restart or something goes wrong)
+systemctl status nginx.service (to check the status of nginx and see if running)
+
+To test, grab the DNS name of your Load Balancer and put it in your browser to see if the app will load, further test by adding a new player and adding an image that is less than 2MB. Great job if it worked :)
+
+
+If you need to stop or delete the app, use the following commands (you don't need to do this if you're going to terminate the EC2 instance at the end, but just good to know)
+pm2 stop 0 (to stop app with ID of 0)
+pm2 delete all (to delete/completely remove the apps from the list)
+
+If creating a load balancer for this, for healthcheck use "/"
+
+
+Troubleshooting nginx "413 Request Entity Too Large" error message. By default, you will get that error message if the image you upload after using nginx as a reverse proxy is high. To fix this, do:
+nano /etc/nginx/nginx.conf
+
+Now, set client body size to 5M (i.e 5MB) or whatever size your image needs. Add  the command below after the server section.
+client_max_body_size 5M;
+
+Now, reload the server:
+sudo systemctl reload nginx.service
+systemctl status nginx.service (to make sure nginx is still running)

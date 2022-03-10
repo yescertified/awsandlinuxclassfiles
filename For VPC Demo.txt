@@ -1,0 +1,11 @@
+VPC CIDR:
+10.0.0.0/16
+
+Public CIDR:
+10.0.0.0/24
+
+Private CIDR:
+10.0.1.0/24
+
+CIDR/Subnet Calculator:
+https://www.site24x7.com/tools/ipv4-subnetcalculator.html (Note: Use 10.0.0.0/16 in "Network Address Block" which is for our VPC and choose "255.255.255.0/24" for Subnet Mask which is our Subnet's CIDR. This website will show you how many subnets you can create with a VPC CIDR of 16 and Subnet CIDR of 24) as well as the number of IP that can be assigned to computers/servers in a given subnet.

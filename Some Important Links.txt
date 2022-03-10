@@ -1,0 +1,17 @@
+Copying an AMI:
+https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html
+
+Writing IAM Policies: How to Grant Access to an Amazon S3 Bucket:
+https://aws.amazon.com/blogs/security/writing-iam-policies-how-to-grant-access-to-an-amazon-s3-bucket/
+
+Restricting Access to Amazon S3 Content by Using an Origin Access Identity:
+https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html
+
+Granting Read-Only Permission to an Anonymous User:
+https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html
+
+Publishing flow logs to CloudWatch Logs:
+https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-cwl.html
+
+VPC CIDR/Subnet Calculator:
+https://www.site24x7.com/tools/ipv4-subnetcalculator.html

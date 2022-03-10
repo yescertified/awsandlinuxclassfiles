@@ -1,0 +1,56 @@
+Amazon Linux 2 AMI-Make sure to update the connection credentials (username and password) in the config file of your source code:
+#!/bin/bash
+sudo yum update -y
+sudo amazon-linux-extras install -y lamp-mariadb10.2-php7.2 php7.2
+sudo yum install -y httpd mariadb-server
+sudo systemctl start httpd
+sudo systemctl enable httpd
+sudo systemctl is-enabled httpd
+sudo aws s3 cp s3://dynamicappmkmk --region us-east-1 /var/www/html/ --recursive
+
+Before adding data into the database, make sure to run the script to create the "test" database and "user" table first:
+ec2-3-84-186-214.compute-1.amazonaws.com/install.php
+
+Test using this link:
+ec2-3-84-186-214.compute-1.amazonaws.com/public/index.php. Important! I recommend you check "http.conf" in Apache and make sure to add the following lines before creating an AMI to use for Autoscaling.....
+AcceptFilter http none
+AcceptFilter https none
+After adding and before creating an AMI of this, make sure to create and instance, add it to a load balancer and test from the load balancer to make sure you are not getting a case where a load balancer shows a blank screen when you enter information on the dynamic website form and click submit ....
+
+
+
+
+For Mysql - Lets use MySQL Workbench to test and see data in our database 
+show databases;
+use test;
+show tables;
+describe users;
+select * from users;
+
+
+If load balancer shows a blank screen when you enter information on the form and click submit, a troubleshooting step is to edit http.conf in Apache and make sure to add the following lines (usually, this works if you just refresh the page).....
+AcceptFilter http none
+AcceptFilter https none
+See this response: https://serverfault.com/a/680076 and this AWS response here - https://forums.aws.amazon.com/thread.jspa?threadID=45564
+
+
+
+
+
+
+Amazon Linux AMI (Deprecated):
+#!/bin/bash
+sudo yum update -y
+sudo yum install -y httpd24 php72 mysql57-server php72-mysqlnd
+sudo service httpd start
+sudo chkconfig httpd on
+sudo service mysqld start
+sudo chkconfig mysqld on
+sudo aws s3 cp s3://webprod --region us-east-1 /var/www/html/ --recursive
+
+
+Before adding data into the database, make sure to run the script to create the "test" database and "user" table first:
+ec2-1-23-456-78.compute-1.amazonaws.com/install.php
+
+Test using this link:
+ec2-1-23-456-78.compute-1.amazonaws.com/public/index.php

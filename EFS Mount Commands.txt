@@ -1,0 +1,24 @@
+Source for the commands:
+https://docs.aws.amazon.com/efs/latest/ug/efs-mount-helper.html#mounting-fs-mount-helper-ec2-linux
+
+
+Before you start typing the commands below in one of the instances you are mounting this file system to, make sure that you have already allowed the EFS security group to allow NFS protocol to the security group of your instance. This is very important to get this to work.
+
+Also, make sure to already create the folder where you need to mount the EFS file system to ( in our class example, we created an efs in our root directory folder we wanted to mount to).
+
+sudo yum -y update
+sudo reboot (This will terminate your current terminal. You need to exit and reconnect. If using session manager, it might take some time before you're able to click the connect button again).
+
+Now, when you're back in after rebooting, run the following commands:
+
+sudo service nfs start
+sudo service nfs status
+
+Now go and grab the NFS client command from your EFS console. The commands is already setup with the file system information you need. It should look like the example below:
+
+sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport fs-0c9fecc4cjje8i047.efs.us-east-1.amazonaws.com:/ efs
+
+My Troubleshooting Tips:
+If the above commands is timing out, make sure to check that the mount targets for your file systems are using the EFS security group you created. You can find this under "Network" when you click on your file system in the console.
+
+If you don't see the same file in the other EC2 instances, make sure that you have already mounted the files system to instance.
